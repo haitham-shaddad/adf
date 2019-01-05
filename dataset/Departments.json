@@ -2,7 +2,7 @@
 	"name": "Departments",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "SqlServer1",
+			"referenceName": "OnPremiseSQL",
 			"type": "LinkedServiceReference"
 		},
 		"type": "SqlServerTable",
