@@ -1,0 +1,139 @@
+{
+	"name": "Copy Customers and Addresses",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy Customers",
+				"type": "Copy",
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"typeProperties": {
+					"source": {
+						"type": "SqlSource"
+					},
+					"sink": {
+						"type": "SqlSink",
+						"writeBatchSize": 10000
+					},
+					"enableStaging": false,
+					"dataIntegrationUnits": 0,
+					"translator": {
+						"type": "TabularTranslator",
+						"columnMappings": {
+							"CustomerID": "CustomerID",
+							"NameStyle": "NameStyle",
+							"Title": "Title",
+							"FirstName": "FirstName",
+							"MiddleName": "MiddleName",
+							"LastName": "LastName",
+							"Suffix": "Suffix",
+							"CompanyName": "CompanyName",
+							"SalesPerson": "SalesPerson",
+							"EmailAddress": "EmailAddress",
+							"Phone": "Phone",
+							"PasswordHash": "PasswordHash",
+							"PasswordSalt": "PasswordSalt",
+							"rowguid": "rowguid",
+							"ModifiedDate": "ModifiedDate"
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "Customers",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Customers_Dist",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Copy Addresses",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Copy Customers",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"typeProperties": {
+					"source": {
+						"type": "SqlSource"
+					},
+					"sink": {
+						"type": "SqlSink",
+						"writeBatchSize": 10000
+					},
+					"enableStaging": false,
+					"dataIntegrationUnits": 0,
+					"translator": {
+						"type": "TabularTranslator",
+						"columnMappings": {
+							"AddressID": "AddressID",
+							"AddressLine1": "AddressLine1",
+							"AddressLine2": "AddressLine2",
+							"City": "City",
+							"StateProvince": "StateProvince",
+							"CountryRegion": "CountryRegion",
+							"PostalCode": "PostalCode",
+							"rowguid": "rowguid",
+							"ModifiedDate": "ModifiedDate"
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "Addresses",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Addresses_Dist",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Execute SSIS Package1",
+				"type": "ExecuteSSISPackage",
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"typeProperties": {
+					"packageLocation": {
+						"packagePath": "/SSISDB/NextGenDev/NetGenETL"
+					},
+					"loggingLevel": "Basic",
+					"connectVia": {
+						"referenceName": "IR-for-SSIS",
+						"type": "IntegrationRuntimeReference"
+					}
+				}
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

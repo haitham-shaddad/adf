@@ -1,0 +1,65 @@
+{
+	"name": "Copy from DB to Storage",
+	"properties": {
+		"activities": [
+			{
+				"name": "Export customers to CSV",
+				"type": "Copy",
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "[SalesLT].[Customer]"
+					},
+					{
+						"name": "Destination",
+						"value": "customers/@{utcnow()}"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "SqlSource"
+					},
+					"sink": {
+						"type": "BlobSink"
+					},
+					"enableStaging": false,
+					"dataIntegrationUnits": 0,
+					"translator": {
+						"type": "TabularTranslator",
+						"columnMappings": {
+							"CustomerID": "CustomerID",
+							"Title": "Title",
+							"FirstName": "FirstName",
+							"MiddleName": "MiddleName",
+							"LastName": "LastName",
+							"CompanyName": "CompanyName",
+							"EmailAddress": "EmailAddress",
+							"Phone": "Phone",
+							"ModifiedDate": "ModifiedDate"
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "Customers",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "CustomerBlob",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
